@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="loginStyle.css">
+    <title>Fundom Login</title>
+    <link href="/images/F.png" type="image/x-icon" rel="icon">
+    <link href="https://fonts.googleapis.com/css2?family=Gasoek+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pontano+Sans&display=swap" rel="stylesheet"> 
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <script src="login.js" defer></script>
+</head>
+<body>
+    <!-- Logo and Fundom word -->
+     <div class="product">
+        <img src="/images/F.png" id="F">
+        <h1>fundom</h1>
+     </div>
+
+    <!-- For words and login button -->
+     <div class="words">
+        <p>
+            Its more <label>fun,</label> when you have free<label>dom</label> to choose what you love to do.
+         </p>
+         <p id="p2">
+            <label id="l2">fundom</label> is a web app to showcase skills of  many students who has incredible talents that can inspired many people. It's about sharing knowledge, improving their skills and discover things.
+         </p>
+     </div>
+     <button type="button"login" id="loginBTN">login</button>
+
+    <!-- For Right side -->
+     <img src="/images/computer.png" id="computer">
+
+    <!-- For Left side -->
+     <img src="/images/iphone.png" id="iphone">
+
+    <!-- Login Form -->
+     <div class="loginFrame">
+        <div class="loginContainer">
+            <ion-icon name="close-outline" id="close-BTN"></ion-icon>
+            <label id="loginAcc">Login Your Account</label>
+            <form action="#" method="post" id="loginForm">
+                <div id="inputInfo">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <input type="text" name="email" placeholder="Email" id="inputTXT">
+                </div>
+                <div id="inputInfo">
+                    <ion-icon name="lock-closed-outline"></ion-icon>
+                    <input type="password" name="password" placeholder="Password" id="inputTXT">
+                </div>
+                <input type="submit" value="Log In" id="btnSub">
+            </form>
+            <label id="registerAcc">
+                Don't have an account?
+                <a href="/register.html" id="register">Register</a>
+            </label>
+        </div>
+     </div>
+</body>
+</html>

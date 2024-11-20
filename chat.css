@@ -1,0 +1,222 @@
+/* General styling */
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #222831; /* Dark Gray */
+  margin: 0;
+  padding: 0;
+  color: #EEEEEE; /* Light Gray */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+#messenger-app {
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  height: 90vh;
+  background-color: #393E46; /* Gray */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* User List */
+#user-list {
+  flex: 1;
+  background-color: #222831; /* Dark Gray */
+  color: #EEEEEE;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+#user-list h2 {
+  margin-top: 0;
+}
+
+#users {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#users li {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #393E46; /* Gray */
+  text-align: center;
+}
+
+#users li:hover,
+.selected-user {
+  background-color: #00ADB5; /* Turquoise */
+  color: #222831; /* Dark Gray */
+}
+
+/* Chat Area */
+#chat-area {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  background-color: #393E46; /* Gray */
+}
+
+#chat-header {
+  padding: 15px 20px;
+  background-color: #00ADB5; /* Turquoise */
+  color: #222831; /* Dark Gray */
+  text-align: center;
+}
+
+#chat-box {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #222831; /* Dark Gray */
+}
+
+.message {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 15px;
+  word-wrap: break-word;
+}
+
+.message.sent {
+  background-color: #00ADB5; /* Turquoise */
+  color: #222831; /* Dark Gray */
+  align-self: flex-end;
+}
+
+.message.received {
+  background-color: #393E46; /* Gray */
+  align-self: flex-start;
+}
+
+/* Message bar */
+#message-bar {
+  display: flex;
+  padding: 15px;
+  gap: 10px;
+  background-color: #222831; /* Dark Gray */
+  align-items: center;
+}
+
+#message-bar input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #00ADB5; /* Turquoise */
+  border-radius: 5px;
+  background-color: #393E46; /* Gray */
+  color: #EEEEEE;
+}
+
+#message-bar button {
+  padding: 10px 15px;
+  background-color: #00ADB5; /* Turquoise */
+  color: #222831; /* Dark Gray */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#message-bar button:hover {
+  background-color: #EEEEEE; /* Light Gray */
+  color: #222831; /* Dark Gray */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  #messenger-app {
+    flex-direction: column;
+  }
+
+  #user-list {
+    flex: 0;
+    height: 30%;
+  }
+
+  #chat-area {
+    flex: 1;
+    height: 70%;
+  }
+}
+
+#typing-indicator {
+  font-size: 14px;
+  color: #00ADB5; /* Turquoise */
+  text-align: left;
+  margin: 5px 15px;
+}
+
+/* Online and Offline Styling */
+.online {
+  color: #00ADB5; /* Turquoise for online */
+}
+
+.offline {
+  color: #EEEEEE; /* Light Gray for offline */
+  opacity: 0.6;
+}
+
+#users li {
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+#users li:hover,
+.selected-user {
+  background-color: #00ADB5; /* Turquoise for selected */
+  color: #222831; /* Dark Gray */
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #b0b0b0;
+  display: block;
+  margin-top: 5px;
+}
+
+#typing-indicator {
+  font-size: 14px;
+  color: #00ADB5; /* Turquoise */
+  text-align: left;
+  margin: 5px 15px;
+  display: none;
+}
+
+#search {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 10px 0;
+  border: 2px solid #00ADB5; /* Turquoise border */
+  border-radius: 5px;
+  background-color: #393E46; /* Dark Gray background */
+  color: #EEEEEE; /* Light Gray text */
+  font-size: 16px; /* Bigger text */
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+#search:focus {
+  border-color: #00ADB5; /* Turquoise border on focus */
+  outline: none;
+  background-color: #222831; /* Dark Gray when focused */
+}
+
+#search::placeholder {
+  color: #B0B0B0; /* Light Gray placeholder */
+  font-style: italic;
+}
