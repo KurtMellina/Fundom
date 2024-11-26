@@ -1,21 +1,33 @@
-const users = ["Sangco", "John Kenneth", "Kinit"]; // Example users
-const userStatus = { Sangco: "online", JohnKenneth: "offline", Kinit: "online" }; // Example statuses
-
 const usersList = document.getElementById("users");
 const chatBox = document.getElementById("chat-box");
 const messageInput = document.getElementById("message");
 const selectedUserHeading = document.getElementById("selected-user");
 
 let selectedUser = null;
+let typingTimeout;
 
-// Populate user list with statuses
-function populateUserList() {
-  usersList.innerHTML = "";
+// Initialize socket connection
+const socket = io(); // Connect to server using socket.io
+
+// Fetch online users from the server
+function getOnlineUsers() {
+  fetch('/api/online-users')  // Fetch online users from the backend
+    .then(response => response.json())
+    .then(users => {
+      populateUserList(users); // Populate the list with the received users
+    })
+    .catch(error => {
+      console.error('Error fetching online users:', error);
+    });
+}
+
+// Populate the user list with online users and their statuses
+function populateUserList(users) {
+  usersList.innerHTML = ""; // Clear existing list
   users.forEach((user) => {
     const userItem = document.createElement("li");
-    userItem.textContent = `${user} (${userStatus[user] || "offline"})`;
-    userItem.classList.add(userStatus[user] || "offline");
-    userItem.onclick = () => selectUser(user, userItem);
+    userItem.textContent = `${user.username} (${user.status})`;
+    userItem.onclick = () => selectUser(user.username, userItem);
     usersList.appendChild(userItem);
   });
 }
@@ -29,18 +41,46 @@ function selectUser(user, userItem) {
   loadChat();
 }
 
-// Add a message
-function addMessage(content, type = "sent") {
-  const messageDiv = document.createElement("div");
-  messageDiv.classList.add("message", type);
+// Handle sending message
+function sendMessage() {
+  const message = messageInput.value.trim();
+  if (!message || !selectedUser) return;
 
-  const messageText = document.createElement("span");
+  const sender = 'YourUsername'; // Replace with actual logged-in user
+
+  // Send message to the server
+  socket.emit('sendMessage', {
+    sender: sender,
+    recipient: selectedUser,
+    message: message
+  });
+
+  // Show user's message
+  addMessage(message, 'sent');
+  messageInput.value = '';
+}
+
+// Listen for new messages from other users
+socket.on('newMessage', (data) => {
+  const { sender, message } = data;
+
+  if (selectedUser === sender) {
+    addMessage(message, 'received');
+  }
+});
+
+// Add message to chat
+function addMessage(content, type = 'sent') {
+  const messageDiv = document.createElement('div');
+  messageDiv.classList.add('message', type);
+
+  const messageText = document.createElement('span');
   messageText.textContent = content;
 
-  const timestamp = document.createElement("small");
-  timestamp.classList.add("timestamp");
+  const timestamp = document.createElement('small');
+  timestamp.classList.add('timestamp');
   const now = new Date();
-  timestamp.textContent = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  timestamp.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   messageDiv.appendChild(messageText);
   messageDiv.appendChild(timestamp);
@@ -49,81 +89,70 @@ function addMessage(content, type = "sent") {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// Send a message
-function sendMessage() {
-  const message = messageInput.value.trim();
-  if (!message || !selectedUser) return;
-  addMessage(message, "sent");
-  saveChat();
-  messageInput.value = "";
-  setTimeout(() => {
-    addMessage(`Reply to: ${message}`, "received");
-    saveChat();
-  }, 1000); // Simulate a reply
-}
-
-// Save chat history in localStorage
+// Save chat history in MongoDB (or localStorage for now)
 function saveChat() {
   if (selectedUser) {
     const chatData = chatBox.innerHTML;
-    localStorage.setItem(selectedUser, chatData);
+    // Call backend to save chat data (e.g., using fetch API)
+    fetch('/api/save-chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user: selectedUser, chat: chatData })
+    });
   }
 }
 
-// Load chat history from localStorage
+// Load chat history from MongoDB (or from localStorage for now)
 function loadChat() {
   if (selectedUser) {
-    const chatData = localStorage.getItem(selectedUser);
-    chatBox.innerHTML = chatData || "";
+    fetch(`/api/load-chat/${selectedUser}`)
+      .then(response => response.json())
+      .then(data => {
+        chatBox.innerHTML = data.chat || "";
+      });
   }
 }
 
-// Initialize chat
-document.addEventListener("DOMContentLoaded", populateUserList);
+// Update online user list every 3 seconds
+setInterval(getOnlineUsers, 3000);
 
-setTimeout(() => {
-    userStatus["Sangco"] = "online"; // Change sangco's status
-    populateUserList(); // Re-render user list to reflect changes
-  }, 5000);
-
-  let typingTimeout;
-
-  function showTypingIndicator() {
-    document.getElementById("typing-indicator").style.display = "block";
-    clearTimeout(typingTimeout);
-    typingTimeout = setTimeout(() => {
-      document.getElementById("typing-indicator").style.display = "none";
-    }, 3000); // Hide indicator after 3 seconds
+// Show typing indicator when the user is typing
+messageInput.addEventListener('input', () => {
+  if (selectedUser) {
+    socket.emit('typing', { sender: 'YourUsername', recipient: selectedUser });
   }
-  
-  // Simulate user typing
-  messageInput.addEventListener("input", () => {
-    if (selectedUser) {
-      showTypingIndicator();
-    }
-  });
+});
 
-  document.getElementById("theme-toggle").addEventListener("click", () => {
-    document.body.classList.toggle("light-theme");
-  });
-
-  function updateOnlineCount() {
-    const onlineUsers = Object.values(userStatus).filter(status => status === "online").length;
-    document.getElementById("online-count").textContent = onlineUsers;
+// Listen for typing indicators from other users
+socket.on('typing', (data) => {
+  const { sender } = data;
+  if (sender !== 'YourUsername' && selectedUser === sender) {
+    showTypingIndicator();
   }
-  
-  setInterval(updateOnlineCount, 1000);
+});
 
-  document.getElementById("search").addEventListener("input", (e) => {
-    const searchQuery = e.target.value.toLowerCase();
-    const filteredUsers = users.filter(user => user.toLowerCase().includes(searchQuery));
-    usersList.innerHTML = "";
-    filteredUsers.forEach((user) => {
-      const userItem = document.createElement("li");
-      userItem.textContent = `${user} (${userStatus[user] || "offline"})`;
-      userItem.classList.add(userStatus[user] || "offline");
-      userItem.onclick = () => selectUser(user, userItem);
-      usersList.appendChild(userItem);
+// Show typing indicator
+function showTypingIndicator() {
+  const typingIndicator = document.getElementById("typing-indicator");
+  typingIndicator.style.display = "block";
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    typingIndicator.style.display = "none";
+  }, 2000); // Hide typing indicator after 2 seconds
+}
+
+// Search functionality for user list
+document.getElementById("search").addEventListener("input", (e) => {
+  const searchQuery = e.target.value.toLowerCase();
+
+  // Fetch the online users again (assuming the list is updated with every search)
+  fetch('/api/online-users')
+    .then(response => response.json())
+    .then(users => {
+      const filteredUsers = users.filter(user => user.username.toLowerCase().includes(searchQuery));
+      populateUserList(filteredUsers); // Populate the filtered list
     });
-  });
-  
+});
+
+// Initialize chat
+document.addEventListener("DOMContentLoaded", getOnlineUsers);
